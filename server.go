@@ -2,19 +2,34 @@ package main
 
 import (
 	"drink-counter-api/driver"
-	"fmt"
+	"drink-counter-api/utils"
+	"encoding/json"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/gorilla/mux"
 )
 
+type Response struct {
+	Message string `json:"message"`
+}
+
 func main() {
+	utils.LoadEnv()
+	PORT := os.Getenv("PORT")
+	HOST := os.Getenv("HOST")
+	ADDRESS := HOST + ":" + PORT
 	db := driver.Connect()
-	log.Default().Println("Server is running on http://localhost:8080")
-	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	main_router := mux.NewRouter()
+	main_router.HandleFunc("/", handler)
+	log.Default().Println("Servidor rodando em " + ADDRESS)
+	log.Fatal(http.ListenAndServe(":" + PORT, main_router))
 	defer driver.Close(db)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello, World!")
+	json.NewEncoder(w).Encode(Response{
+		Message: "Hello World",
+	})
 }
