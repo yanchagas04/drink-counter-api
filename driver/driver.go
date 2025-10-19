@@ -26,9 +26,11 @@ func Close(db *gorm.DB) {
 	sqlDB.Close()
 }
 
-func Migrate(db *gorm.DB, models ...struct{}) {
-	err := db.AutoMigrate(models)
-	if err != nil {
-		panic("failed to migrate database")
+func Migrate(db *gorm.DB, models ...interface{}) {
+	for i := 0; i < len(models); i++ {
+		err := db.AutoMigrate(models[i])
+		if err != nil {
+			panic("failed to migrate database")
+		}
 	}
 }
