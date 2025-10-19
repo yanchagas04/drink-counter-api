@@ -1,6 +1,11 @@
 package posts
 
-type PostResponse struct {
+type PostRequest struct {
+	Title string `json:"title"`
+	Description string `json:"description"`
+}
+
+type PostData struct {
 	ID uint `json:"id"`
 	Title string `json:"title"`
 	Description string `json:"description"`
@@ -8,11 +13,12 @@ type PostResponse struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
-type PostRequest struct {
-	Title string `json:"title"`
-	Description string `json:"description"`
+type PostResponse struct {
+	Message string `json:"message"`
+	Data PostData `json:"data"`
 }
 
 type PostListResponse struct {
-	Posts []PostResponse `json:"posts"`
+	Message string `json:"message"`
+	Data []PostData `json:"data"`
 }
