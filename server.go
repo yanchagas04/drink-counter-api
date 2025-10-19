@@ -21,11 +21,11 @@ func main() {
 	HOST := os.Getenv("HOST")
 	ADDRESS := HOST + ":" + PORT
 	db := driver.Connect()
+	defer driver.Close(db)
 	main_router := mux.NewRouter()
 	main_router.HandleFunc("/", handler)
 	log.Default().Println("Servidor rodando em " + ADDRESS)
 	log.Fatal(http.ListenAndServe(":" + PORT, main_router))
-	defer driver.Close(db)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
