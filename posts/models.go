@@ -16,5 +16,5 @@ type Post struct {
 	Title string
 	Description string
 	Likes int
-	Comments []Comment 
+	Comments []Comment `gorm:"foreignKey:ID"`
 }
