@@ -3,6 +3,7 @@ module drink-counter-api
 go 1.25.1
 
 require (
+	github.com/go-gormigrate/gormigrate/v2 v2.1.5
 	github.com/gorilla/handlers v1.5.2
 	github.com/joho/godotenv v1.5.1
 	gorm.io/driver/postgres v1.6.0

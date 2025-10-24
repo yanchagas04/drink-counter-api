@@ -1,7 +1,7 @@
-package users
+package models
 
 import (
-	"drink-counter-api/posts"
+	posts "drink-counter-api/posts/models"
 
 	"gorm.io/gorm"
 )

@@ -1,4 +1,4 @@
-package users
+package schemas
 
 type UserData struct {
 	ID        uint   `json:"id"`

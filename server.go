@@ -2,7 +2,6 @@ package main
 
 import (
 	"drink-counter-api/driver"
-	"drink-counter-api/posts"
 	"drink-counter-api/users"
 	"drink-counter-api/utils"
 	"encoding/json"
@@ -18,22 +17,17 @@ type Response struct {
 	Message string `json:"message"`
 }
 
-var MODELS = []interface{}{
-	&posts.Post{},
-	&posts.Comment{},
-	&users.User{},
-}
-
 func main() {
 	utils.LoadEnv()
 	PORT := os.Getenv("PORT")
 	HOST := os.Getenv("HOST")
 	ADDRESS := HOST + ":" + PORT
 	db := driver.Connect()
-	driver.Migrate(db, MODELS...)
+	driver.RunMigrations(db)
 	defer driver.Close(db)
 	main_router := mux.NewRouter()
 	main_router.HandleFunc("/", handler).Methods("GET")
+	users.Init(main_router, db)
 	cors := handlers.CORS(
 		handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),

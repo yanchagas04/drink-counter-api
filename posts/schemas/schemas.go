@@ -1,4 +1,4 @@
-package posts
+package schemas
 
 type CommentData struct {
 	ID        uint   `json:"id"`
@@ -9,12 +9,12 @@ type CommentData struct {
 }
 
 type PostData struct {
-	ID          uint          `json:"id"`
-	Title       string        `json:"title"`
-	Description string        `json:"description"`
-	Likes       int           `json:"likes"`
-	CreatedAt   string        `json:"created_at"`
-	UpdatedAt   string        `json:"updated_at"`
+	ID          uint   `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Likes       int    `json:"likes"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
 }
 
 type PostRequest struct {
