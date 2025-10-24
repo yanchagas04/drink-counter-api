@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"drink-counter-api/driver"
 	"drink-counter-api/users/models"
 	"drink-counter-api/users/schemas"
 	"encoding/json"
@@ -25,18 +26,15 @@ func CreateHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		Password: userRequest.Password,
 	}
 	log.Default().Println("user struct -> ", user)
-	id := db.Create(&user)
-	if id.Error != nil {
-		switch id.Error {
-		case gorm.ErrInvalidData:
-			http.Error(w, "Invalid data: missing fields or invalid format", http.StatusBadRequest)
-		case gorm.ErrDuplicatedKey:
-			http.Error(w, "User already exists", http.StatusConflict)
-		default:
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-		}
-	}
+	result := db.Create(&user)
 	w.Header().Set("Content-Type", "application/json")
+	error := driver.CheckErrors(result, "User")
+	if error.Code != 0 {
+		log.Default().Println(error.Response.Message)
+		w.WriteHeader(error.Code)
+		json.NewEncoder(w).Encode(error.Response)
+		return	
+	}
 	w.WriteHeader(http.StatusCreated)
 	response := schemas.UserResponse{
 		Message: "User created successfully",
@@ -47,6 +45,7 @@ func CreateHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 			Email: user.Email,
 			CreatedAt: user.CreatedAt.String(),
 			UpdatedAt: user.UpdatedAt.String(),
+			DeletedAt: user.DeletedAt.Time.String(),
 		},
 	}
 	json.NewEncoder(w).Encode(response)

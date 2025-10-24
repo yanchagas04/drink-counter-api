@@ -6,6 +6,7 @@ type CommentData struct {
 	Author    uint   `json:"author"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
+	DeletedAt string `json:"deleted_at"`
 }
 
 type PostData struct {
@@ -15,6 +16,7 @@ type PostData struct {
 	Likes       int    `json:"likes"`
 	CreatedAt   string `json:"created_at"`
 	UpdatedAt   string `json:"updated_at"`
+	DeletedAt   string `json:"deleted_at"`
 }
 
 type PostRequest struct {
