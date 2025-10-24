@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -32,9 +33,14 @@ func main() {
 	driver.Migrate(db, MODELS...)
 	defer driver.Close(db)
 	main_router := mux.NewRouter()
-	main_router.HandleFunc("/", handler)
+	main_router.HandleFunc("/", handler).Methods("GET")
+	cors := handlers.CORS(
+		handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+		handlers.AllowedOrigins([]string{"*"}),
+	)
 	log.Default().Println("Servidor rodando em " + ADDRESS)
-	log.Fatal(http.ListenAndServe(":" + PORT, main_router))
+	log.Fatal(http.ListenAndServe(":" + PORT, cors(main_router)))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
