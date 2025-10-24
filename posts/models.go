@@ -8,6 +8,8 @@ type Comment struct {
 	gorm.Model
 	ID uint
 	Content string
+	PostID uint
+	Author uint
 }
 
 type Post struct {
@@ -16,5 +18,6 @@ type Post struct {
 	Title string
 	Description string
 	Likes int
-	Comments []Comment `gorm:"foreignKey:ID"`
+	Comments []Comment `gorm:"foreignKey:PostID;OnDelete:CASCADE;OnUpdate:CASCADE"`
+	Author uint
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"drink-counter-api/driver"
 	"drink-counter-api/posts"
+	"drink-counter-api/users"
 	"drink-counter-api/utils"
 	"encoding/json"
 	"log"
@@ -18,6 +19,8 @@ type Response struct {
 
 var MODELS = []interface{}{
 	&posts.Post{},
+	&posts.Comment{},
+	&users.User{},
 }
 
 func main() {

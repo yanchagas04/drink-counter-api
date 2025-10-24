@@ -3,6 +3,7 @@ package posts
 type CommentData struct {
 	ID uint `json:"id"`
 	Content string `json:"content"`
+	Author uint `json:"author"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }
