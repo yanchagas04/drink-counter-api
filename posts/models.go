@@ -17,6 +17,7 @@ type Post struct {
 	ID uint
 	Title string
 	Description string
+	Amount int
 	Likes int
 	Comments []Comment `gorm:"foreignKey:PostID;OnDelete:CASCADE;OnUpdate:CASCADE"`
 	Author uint
