@@ -2,6 +2,7 @@ package routes
 
 import (
 	"drink-counter-api/driver"
+	"drink-counter-api/users/errors"
 	"drink-counter-api/users/models"
 	"drink-counter-api/users/schemas"
 	"encoding/json"
@@ -16,7 +17,9 @@ func CreateHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&userRequest)
 	log.Default().Println("userRequest -> ", userRequest)
 	if err != nil {
-		http.Error(w, "Invalid request body: " + err.Error(), http.StatusBadRequest)
+		validationErrors := errors.FormatValidationErrors(err)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errors.InvalidField(validationErrors["password"]))
 		return
 	}
 	user := models.User {
