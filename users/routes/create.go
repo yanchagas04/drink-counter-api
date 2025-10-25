@@ -1,10 +1,9 @@
 package routes
 
 import (
-	"drink-counter-api/driver"
-	"drink-counter-api/users/errors"
 	"drink-counter-api/users/models"
 	"drink-counter-api/users/schemas"
+	SchemaErrors "drink-counter-api/utils"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -13,13 +12,11 @@ import (
 )
 
 func CreateHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	var userRequest schemas.UserRequest
 	err := json.NewDecoder(r.Body).Decode(&userRequest)
 	log.Default().Println("userRequest -> ", userRequest)
-	if err != nil {
-		validationErrors := errors.FormatValidationErrors(err)
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(errors.InvalidField(validationErrors["password"]))
+	if SchemaErrors.CheckSchemaErrors(err, w, userRequest){
 		return
 	}
 	user := models.User {
@@ -30,13 +27,8 @@ func CreateHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	log.Default().Println("user struct -> ", user)
 	result := db.Create(&user)
-	w.Header().Set("Content-Type", "application/json")
-	error := driver.CheckErrors(result, "User")
-	if error.Code != 0 {
-		log.Default().Println(error.Response.Message)
-		w.WriteHeader(error.Code)
-		json.NewEncoder(w).Encode(error.Response)
-		return	
+	if SchemaErrors.CheckDatabaseErrors(result.Error, w, "User"){
+		return
 	}
 	w.WriteHeader(http.StatusCreated)
 	response := schemas.UserResponse{
