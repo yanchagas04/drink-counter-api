@@ -3,7 +3,7 @@ package routes
 import (
 	"drink-counter-api/users/models"
 	"drink-counter-api/users/schemas"
-	SchemaErrors "drink-counter-api/utils"
+	DatabaseErrors "drink-counter-api/utils/db_errors"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -18,7 +18,7 @@ func GetHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	var users []models.User
 	var usersList []schemas.UserData
 	result := db.Where("name LIKE ? OR username LIKE ?", q + "%", q + "%").Find(&users)
-	if SchemaErrors.CheckDatabaseErrors(result.Error, w, "User") {
+	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") {
 		return
 	}
 	w.WriteHeader(http.StatusOK)

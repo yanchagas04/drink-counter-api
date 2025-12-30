@@ -3,7 +3,9 @@ package routes
 import (
 	"drink-counter-api/users/models"
 	"drink-counter-api/users/schemas"
-	SchemaErrors "drink-counter-api/utils"
+	Utils "drink-counter-api/utils"
+	DatabaseErrors "drink-counter-api/utils/db_errors"
+	SchemaErrors "drink-counter-api/utils/schema_errors"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -28,11 +30,11 @@ func UpdateHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		Name: userRequest.Name,
 		Username: userRequest.Username,
 		Email: userRequest.Email,
-		Password: userRequest.Password,
+		Password: Utils.HashPassword(userRequest.Password),
 	}
 	log.Default().Println("user struct -> ", user)
 	result := db.Save(&user)
-	if SchemaErrors.CheckDatabaseErrors(result.Error, w, "User") {
+	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") {
 		return
 	}
 	w.WriteHeader(http.StatusOK)

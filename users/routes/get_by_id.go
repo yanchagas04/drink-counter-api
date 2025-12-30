@@ -3,7 +3,8 @@ package routes
 import (
 	"drink-counter-api/users/models"
 	"drink-counter-api/users/schemas"
-	SchemaErrors "drink-counter-api/utils"
+	DatabaseErrors "drink-counter-api/utils/db_errors"
+	SchemaErrors "drink-counter-api/utils/schema_errors"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -25,7 +26,7 @@ func GetByIdHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	var user models.User
 	result := db.First(&user, uint(id))
-	if SchemaErrors.CheckDatabaseErrors(result.Error, w, "User") {
+	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
