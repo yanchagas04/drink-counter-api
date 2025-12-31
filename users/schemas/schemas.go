@@ -26,3 +26,13 @@ type UserListResponse struct {
 	Message string     `json:"message"`
 	Data    []UserData `json:"data"`
 }
+
+type UserLoginRequest struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=8"`
+}
+
+type UserLoginResponse struct {
+	Message string `json:"message"`
+	Token   string `json:"token"`
+}
