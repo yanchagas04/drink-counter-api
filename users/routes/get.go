@@ -4,6 +4,7 @@ import (
 	"drink-counter-api/users/models"
 	"drink-counter-api/users/schemas"
 	DatabaseErrors "drink-counter-api/utils/db_errors"
+	SchemaErrors "drink-counter-api/utils/schema_errors"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -19,6 +20,13 @@ func GetHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	var usersList []schemas.UserData
 	result := db.Where("name LIKE ? OR username LIKE ?", q + "%", q + "%").Find(&users)
 	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") {
+		return
+	}
+	if len(users) == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(SchemaErrors.ErrorResponse{
+			Message: "No users found",
+		})
 		return
 	}
 	w.WriteHeader(http.StatusOK)

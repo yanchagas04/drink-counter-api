@@ -3,9 +3,9 @@ package routes
 import (
 	"drink-counter-api/users/models"
 	"drink-counter-api/users/schemas"
-	SchemaErrors "drink-counter-api/utils/schema_errors"
-	DatabaseErrors "drink-counter-api/utils/db_errors"
 	Utils "drink-counter-api/utils"
+	DatabaseErrors "drink-counter-api/utils/db_errors"
+	SchemaErrors "drink-counter-api/utils/schema_errors"
 	"encoding/json"
 	"log"
 	"net/http"
