@@ -3,6 +3,7 @@ package routes
 import (
 	"drink-counter-api/users/models"
 	"drink-counter-api/users/schemas"
+	"drink-counter-api/utils"
 	DatabaseErrors "drink-counter-api/utils/db_errors"
 	SchemaErrors "drink-counter-api/utils/schema_errors"
 	"encoding/json"
@@ -18,6 +19,7 @@ func GetHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	log.Default().Println("q -> ", q)
 	var users []models.User
 	var usersList []schemas.UserData
+	
 	result := db.Where("name LIKE ? OR username LIKE ?", q + "%", q + "%").Find(&users)
 	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") {
 		return
@@ -32,13 +34,12 @@ func GetHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	for _, user := range users {
 		usersList = append(usersList, schemas.UserData {
-			ID: user.ID,
 			Name: user.Name,
 			Username: user.Username,
 			Email: user.Email,
-			CreatedAt: user.CreatedAt.String(),
-			UpdatedAt: user.UpdatedAt.String(),
-			DeletedAt: user.DeletedAt.Time.String(),
+			CreatedAt: user.CreatedAt.Format(utils.DATEFORMAT),
+			UpdatedAt: user.UpdatedAt.Format(utils.DATEFORMAT),
+			DeletedAt: utils.VerifyIfDeleted(user.DeletedAt),
 		})
 	}
 	log.Default().Println("usersList -> ", usersList)

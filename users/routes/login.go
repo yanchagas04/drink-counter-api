@@ -26,7 +26,7 @@ func LoginHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") {
 		return
 	}
-	if !Utils.VerifyPassword(userRequest.Password, user.Password) {
+	if Utils.WrongPassword(userRequest.Password, user.Password) {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(SchemaErros.ErrorResponse{
 			Message: "Invalid credentials",

@@ -3,6 +3,7 @@ package routes
 import (
 	"drink-counter-api/users/models"
 	"drink-counter-api/users/schemas"
+	"drink-counter-api/utils"
 	Utils "drink-counter-api/utils"
 	DatabaseErrors "drink-counter-api/utils/db_errors"
 	SchemaErrors "drink-counter-api/utils/schema_errors"
@@ -36,13 +37,12 @@ func CreateHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	response := schemas.UserResponse{
 		Message: "User created successfully",
 		Data: schemas.UserData{
-			ID: user.ID,
 			Name: user.Name,
 			Username: user.Username,
 			Email: user.Email,
-			CreatedAt: user.CreatedAt.String(),
-			UpdatedAt: user.UpdatedAt.String(),
-			DeletedAt: user.DeletedAt.Time.String(),
+			CreatedAt: user.CreatedAt.Format(utils.DATEFORMAT),
+			UpdatedAt: user.UpdatedAt.Format(utils.DATEFORMAT),
+			DeletedAt: utils.VerifyIfDeleted(user.DeletedAt),
 		},
 	}
 	json.NewEncoder(w).Encode(response)

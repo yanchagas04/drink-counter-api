@@ -3,6 +3,7 @@ package routes
 import (
 	"drink-counter-api/users/models"
 	"drink-counter-api/users/schemas"
+	"drink-counter-api/utils"
 	Utils "drink-counter-api/utils"
 	DatabaseErrors "drink-counter-api/utils/db_errors"
 	SchemaErrors "drink-counter-api/utils/schema_errors"
@@ -25,15 +26,20 @@ func UpdateHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	vars := mux.Vars(r)
 	id, err := strconv.ParseUint(vars["id"], 10, 32)
+	var userFound models.User
+	result := db.First(&userFound, id) // checa se o usuario existe no banco
+	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") {
+		return
+	}
 	user := models.User {
-		ID: uint(id),
-		Name: userRequest.Name,
-		Username: userRequest.Username,
-		Email: userRequest.Email,
-		Password: Utils.HashPassword(userRequest.Password),
+		ID: userFound.ID,
+		Name: userFound.Name,
+		Username: userFound.Username,
+		Email: userFound.Email,
+		Password: Utils.HashPassword(userFound.Password),
 	}
 	log.Default().Println("user struct -> ", user)
-	result := db.Save(&user)
+	result = db.Save(&user)
 	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") {
 		return
 	}
@@ -41,13 +47,12 @@ func UpdateHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	response := schemas.UserResponse {
 		Message: "User updated successfully",
 		Data: schemas.UserData {
-			ID: user.ID,
 			Name: user.Name,
 			Username: user.Username,
 			Email: user.Email,
-			CreatedAt: user.CreatedAt.String(),
-			UpdatedAt: user.UpdatedAt.String(),
-			DeletedAt: user.DeletedAt.Time.String(),
+			CreatedAt: user.CreatedAt.Format(utils.DATEFORMAT),
+			UpdatedAt: user.UpdatedAt.Format(utils.DATEFORMAT),
+			DeletedAt: utils.VerifyIfDeleted(user.DeletedAt),
 		},
 	}
 	json.NewEncoder(w).Encode(response)

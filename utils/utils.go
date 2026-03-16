@@ -8,7 +8,10 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
+	"gorm.io/gorm"
 )
+
+var DATEFORMAT = "2006-01-02T15:04:05Z07:00"
 
 func LoadEnv() {
 	err := godotenv.Load(".env")
@@ -24,6 +27,10 @@ func HashPassword(password string) string {
 
 func VerifyPassword(password string, hashedPassword string) bool {
 	return HashPassword(password) == hashedPassword
+}
+
+func WrongPassword(password string, hashedPassword string) bool {
+	return !VerifyPassword(password, hashedPassword)
 }
 
 func GenerateToken(user models.User) string {
@@ -52,4 +59,11 @@ func ValidateToken(tokenString string) (bool, error) {
 		return false, nil
 	}
 	return true, nil
+}
+
+func VerifyIfDeleted(field gorm.DeletedAt) string {
+	if field.Valid {
+		return field.Time.Format(DATEFORMAT)
+	}
+	return ""
 }
