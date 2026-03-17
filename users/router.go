@@ -15,4 +15,5 @@ func Init(router *mux.Router, db *gorm.DB) {
 	userRouter.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) { routes.GetHandler(db, w, r) }).Methods("GET")
 	userRouter.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) { routes.LoginHandler(db, w, r) }).Methods("POST")
 	userRouter.HandleFunc("/{username}", func(w http.ResponseWriter, r *http.Request) { routes.GetByUsername(db, w, r) }).Methods("GET")
+	userRouter.HandleFunc("/{id}", func(w http.ResponseWriter, r *http.Request) { routes.DeleteHandler(db, w, r) }).Methods("DELETE")
 }

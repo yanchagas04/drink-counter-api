@@ -4,6 +4,7 @@ import (
 	SchemaErrors "drink-counter-api/utils/schema_errors"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -33,6 +34,7 @@ func SomethingWentWrongDB() SchemaErrors.ErrorResponse {
 
 func CheckDatabaseErrors(err error, w http.ResponseWriter, entity string) bool {
 	if err != nil {
+		fmt.Println("Error: " + err.Error())
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			w.WriteHeader(http.StatusNotFound)
 			json.NewEncoder(w).Encode(EntityNotFound(entity))
