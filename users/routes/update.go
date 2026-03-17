@@ -26,20 +26,15 @@ func UpdateHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	vars := mux.Vars(r)
 	id, err := strconv.ParseUint(vars["id"], 10, 32)
-	var userFound models.User
-	result := db.First(&userFound, id) // checa se o usuario existe no banco
-	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") {
-		return
-	}
 	user := models.User {
-		ID: userFound.ID,
-		Name: userFound.Name,
-		Username: userFound.Username,
-		Email: userFound.Email,
-		Password: Utils.HashPassword(userFound.Password),
+		ID: uint(id),
+		Name: userRequest.Name,
+		Username: userRequest.Username,
+		Email: userRequest.Email,
+		Password: Utils.HashPassword(userRequest.Password),
 	}
 	log.Default().Println("user struct -> ", user)
-	result = db.Save(&user)
+	result := db.Save(&user)
 	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") {
 		return
 	}
