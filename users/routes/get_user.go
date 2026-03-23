@@ -6,33 +6,30 @@ import (
 
 	"drink-counter-api/users/models"
 	"drink-counter-api/users/schemas"
+	UserServices "drink-counter-api/users/services"
 	"drink-counter-api/utils"
 	DatabaseErrors "drink-counter-api/utils/db_errors"
-	SchemaErrors "drink-counter-api/utils/schema_errors"
 	"encoding/json"
 
-	"github.com/gorilla/mux"
 	"gorm.io/gorm"
 )
 
-// Get a user's public profile by it's username.
-func GetUserByUsername(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+// Get a user's public profile and it's id (token required). Only the user who created the user can access.
+func GetUserHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json") // seta o header da resposta como json
-	username := mux.Vars(r)["username"] // pega o parâmetro username na rota
-	if username == ""  { // verifica se o username está vazio
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(SchemaErrors.ErrorResponse{
-			Message: "Username is missing or is not an acceptable type",
-		})
+	authorization := UserServices.AuthService(w, r.Header.Get("Authorization"))
+	if !authorization.Valid {
 		return
 	}
-	fmt.Println("username = " + username)
+	fmt.Println("id = ", *(authorization.UserId))
 	var user models.User
-	result := db.Where("username = ?", username).First(&user)
+	id := *(authorization.UserId)
+	result := db.First(&user, "id = ?", id)
 	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") { // verifica erros no banco
 		return
 	}
 	response := schemas.UserData{
+		ID: user.ID,
 		Name: user.Name,
 		Email: user.Email,
 		Username: user.Username,

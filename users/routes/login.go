@@ -3,7 +3,7 @@ package routes
 import (
 	"drink-counter-api/users/models"
 	"drink-counter-api/users/schemas"
-	Utils "drink-counter-api/utils"
+	UserUtils "drink-counter-api/users/utils"
 	DatabaseErrors "drink-counter-api/utils/db_errors"
 	SchemaErros "drink-counter-api/utils/schema_errors"
 	"encoding/json"
@@ -13,7 +13,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func LoginHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+// Login using email and password, returning a access token.
+func UserLoginHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var userRequest schemas.UserLoginRequest
 	err := json.NewDecoder(r.Body).Decode(&userRequest)
@@ -26,7 +27,7 @@ func LoginHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") {
 		return
 	}
-	if Utils.WrongPassword(userRequest.Password, user.Password) {
+	if UserUtils.WrongPassword(userRequest.Password, user.Password) {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(SchemaErros.ErrorResponse{
 			Message: "Invalid credentials",
@@ -36,7 +37,7 @@ func LoginHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	response := schemas.UserLoginResponse {
 		Message: "User logged in successfully",
-		Token: Utils.GenerateToken(user),
+		Token: UserUtils.GenerateToken(user),
 	}
 	json.NewEncoder(w).Encode(response)
 }

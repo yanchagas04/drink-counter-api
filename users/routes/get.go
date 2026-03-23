@@ -13,7 +13,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+// Get all users or a list of users using a query filter.
+func GetUsersHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	q := r.URL.Query().Get("q")
 	log.Default().Println("q -> ", q)

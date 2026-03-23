@@ -12,7 +12,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func DeleteHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+// Deletes a user (token required). Only the user who created the user can delete it's own user.
+func DeleteUserHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	id, err := strconv.ParseUint(mux.Vars(r)["id"], 10, 32)
 	if err != nil {
