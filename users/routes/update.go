@@ -26,15 +26,28 @@ func UpdateHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	vars := mux.Vars(r)
 	id, err := strconv.ParseUint(vars["id"], 10, 32)
-	user := models.User {
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(SchemaErrors.ErrorResponse{
+			Message: "Invalid id",
+		})
+		return
+	}
+	// verifica se o usuário existe
+	var user models.User
+	userExist := db.Where("id = ?", id).First(&user)
+	if DatabaseErrors.CheckDatabaseErrors(userExist.Error, w, "User") {
+		return
+	}
+	newUser := models.User {
 		ID: uint(id),
 		Name: userRequest.Name,
 		Username: userRequest.Username,
 		Email: userRequest.Email,
 		Password: Utils.HashPassword(userRequest.Password),
 	}
-	log.Default().Println("user struct -> ", user)
-	result := db.Save(&user)
+	log.Default().Println("user struct -> ", newUser)
+	result := db.Save(&newUser)
 	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") {
 		return
 	}
