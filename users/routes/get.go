@@ -16,11 +16,12 @@ import (
 // Get all users or a list of users using a query filter.
 func GetUsersHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
 	q := r.URL.Query().Get("q")
 	log.Default().Println("q -> ", q)
+
 	var users []models.User
 	var usersList []schemas.UserData
-	
 	result := db.Where("name LIKE ? OR username LIKE ?", q + "%", q + "%").Find(&users)
 	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") {
 		return
@@ -32,6 +33,7 @@ func GetUsersHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+	
 	w.WriteHeader(http.StatusOK)
 	for _, user := range users {
 		usersList = append(usersList, schemas.UserData {

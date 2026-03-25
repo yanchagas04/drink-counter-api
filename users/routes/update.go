@@ -3,6 +3,7 @@ package routes
 import (
 	"drink-counter-api/users/models"
 	"drink-counter-api/users/schemas"
+	UserServices "drink-counter-api/users/services"
 	UserUtils "drink-counter-api/users/utils"
 	"drink-counter-api/utils"
 	DatabaseErrors "drink-counter-api/utils/db_errors"
@@ -19,6 +20,7 @@ import (
 // Update a user's general info (token required). Only the user who created the user can update it's own user.
 func UpdateUserHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	
 	var userRequest schemas.UserRequest
 	err := json.NewDecoder(r.Body).Decode(&userRequest)
 	log.Default().Println("userRequest -> ", userRequest)
@@ -34,12 +36,18 @@ func UpdateUserHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+
+	if UserServices.AuthService(w, r.Header.Get("Authorization"), uint(id)) == nil{
+		return
+	}
+
 	// verifica se o usuário existe
 	var user models.User
 	userExist := db.Where("id = ?", id).First(&user)
 	if DatabaseErrors.CheckDatabaseErrors(userExist.Error, w, "User") {
 		return
 	}
+
 	newUser := models.User {
 		ID: uint(id),
 		Name: userRequest.Name,
@@ -52,6 +60,7 @@ func UpdateUserHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") {
 		return
 	}
+
 	w.WriteHeader(http.StatusOK)
 	response := schemas.UserResponse {
 		Message: "User updated successfully",

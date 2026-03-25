@@ -17,12 +17,14 @@ import (
 // Create a new user.
 func CreateUserHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
 	var userRequest schemas.UserRequest
 	err := json.NewDecoder(r.Body).Decode(&userRequest)
 	log.Default().Println("userRequest -> ", userRequest)
 	if SchemaErrors.CheckSchemaErrors(err, w, userRequest){
 		return
 	}
+
 	user := models.User {
 		Name: userRequest.Name,
 		Username: userRequest.Username,
@@ -34,6 +36,7 @@ func CreateUserHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User"){
 		return
 	}
+	
 	w.WriteHeader(http.StatusCreated)
 	response := schemas.UserResponse{
 		Message: "User created successfully",

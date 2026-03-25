@@ -40,7 +40,7 @@ func CheckDatabaseErrors(err error, w http.ResponseWriter, entity string) bool {
 			json.NewEncoder(w).Encode(EntityNotFound(entity))
 			return true
 		} else if errors.Is(err, gorm.ErrDuplicatedKey) {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusConflict)
 			json.NewEncoder(w).Encode(EntityAlreadyExists(entity))
 			return true
 		} else if errors.Is(err, gorm.ErrInvalidData) {

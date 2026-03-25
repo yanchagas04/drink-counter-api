@@ -4,6 +4,7 @@ import (
 	"drink-counter-api/users/models"
 	"drink-counter-api/users/schemas"
 	UserUtils "drink-counter-api/users/utils"
+	"drink-counter-api/utils"
 	DatabaseErrors "drink-counter-api/utils/db_errors"
 	SchemaErros "drink-counter-api/utils/schema_errors"
 	"encoding/json"
@@ -38,6 +39,15 @@ func UserLoginHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	response := schemas.UserLoginResponse {
 		Message: "User logged in successfully",
 		Token: UserUtils.GenerateToken(user),
+		Data: schemas.UserData{
+			ID: user.ID,
+			Name: user.Name,
+			Username: user.Username,
+			Email: user.Email,
+			CreatedAt: user.CreatedAt.Format(utils.DATEFORMAT),
+			UpdatedAt: user.UpdatedAt.Format(utils.DATEFORMAT),
+			DeletedAt: utils.VerifyIfDeleted(user.DeletedAt),
+		},
 	}
 	json.NewEncoder(w).Encode(response)
 }

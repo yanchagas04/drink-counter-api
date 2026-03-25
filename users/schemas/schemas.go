@@ -5,6 +5,7 @@ type UserData struct {
 	Name      string `json:"name"`
 	Username  string `json:"username"`
 	Email     string `json:"email"`
+	Password  string `json:"password,omitempty"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 	DeletedAt string `json:"deleted_at"`
@@ -33,6 +34,7 @@ type UserLoginRequest struct {
 }
 
 type UserLoginResponse struct {
-	Message string `json:"message"`
-	Token   string `json:"token"`
+	Message string   `json:"message"`
+	Token   string   `json:"token"`
+	Data    UserData `json:"data"`
 }
