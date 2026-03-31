@@ -15,6 +15,12 @@ func HashPassword(password string) string {
 	return hex.EncodeToString(hash[:])
 }
 
+// Function to unhash password
+func UnhashPassword(password string) string {
+	hash, _ := hex.DecodeString(password)
+	return string(hash)
+}
+
 // Function to verify password, returns true if password is correct else false
 func VerifyPassword(password string, hashedPassword string) bool {
 	return HashPassword(password) == hashedPassword
