@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -20,9 +21,19 @@ func GetUsersHandler(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
 	log.Default().Println("q -> ", q)
 
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(SchemaErrors.ErrorResponse{
+			Message: "Invalid page",
+		})
+		return
+	}
+	log.Default().Println("page -> ", page)
+
 	var users []models.User
 	var usersList []schemas.UserData
-	result := db.Where("name LIKE ? OR username LIKE ?", q + "%", q + "%").Find(&users)
+	result := db.Where("name LIKE ? OR username LIKE ?", q + "%", q + "%").Limit(utils.PAGESIZE).Offset(utils.CalculateOffset(page)).Find(&users)
 	if DatabaseErrors.CheckDatabaseErrors(result.Error, w, "User") {
 		return
 	}

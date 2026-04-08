@@ -7,6 +7,12 @@ import (
 
 var DATEFORMAT = "2006-01-02T15:04:05Z07:00"
 
+var PAGESIZE = 10
+
+func CalculateOffset(page int) int {
+	return (page - 1) * PAGESIZE
+}
+
 func LoadEnv() {
 	err := godotenv.Load(".env")
 	if err != nil {
