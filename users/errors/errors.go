@@ -1,17 +1,17 @@
 package errors
 
 import (
-	"drink-counter-api/utils"
+	SchemaErrors "drink-counter-api/utils/schema_errors"
 )
 
-func UserNotFound() utils.ErrorResponse {
-	return utils.ErrorResponse{
+func UserNotFound() SchemaErrors.ErrorResponse {
+	return SchemaErrors.ErrorResponse{
 		Message: "User not found",
 	}
 }
 
-func UserAlreadyExists() utils.ErrorResponse {
-	return utils.ErrorResponse{
+func UserAlreadyExists() SchemaErrors.ErrorResponse {
+	return SchemaErrors.ErrorResponse{
 		Message: "User already exists",
 	}
 }

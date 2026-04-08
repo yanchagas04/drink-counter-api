@@ -1,4 +1,4 @@
-package utils
+package schema_errors
 
 import (
 	"encoding/json"

@@ -1,10 +1,11 @@
 package schemas
 
 type UserData struct {
-	ID        uint   `json:"id"`
+	ID        uint   `json:"id,omitempty"`
 	Name      string `json:"name"`
 	Username  string `json:"username"`
 	Email     string `json:"email"`
+	Password  string `json:"password,omitempty"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 	DeletedAt string `json:"deleted_at"`
@@ -25,4 +26,15 @@ type UserResponse struct {
 type UserListResponse struct {
 	Message string     `json:"message"`
 	Data    []UserData `json:"data"`
+}
+
+type UserLoginRequest struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=8"`
+}
+
+type UserLoginResponse struct {
+	Message string   `json:"message"`
+	Token   string   `json:"token"`
+	Data    UserData `json:"data"`
 }
